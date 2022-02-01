@@ -102,10 +102,10 @@ class Net(pl.LightningModule):
         optimizer = AdamW(self.parameters(), lr=self.lr, weight_decay=0.001)
         total_steps = len(self.data)/self.batch_size*self.epochs
         print('total steps:', total_steps)
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer, self.warm_up_steps, total_steps
-        )
-        scheduler = {"scheduler": scheduler,
+        # scheduler = get_linear_schedule_with_warmup(
+        #     optimizer, self.warm_up_steps, total_steps
+        # )
+        scheduler = {"scheduler": None,
                      "interval": "step", "frequency": 1}
         return [optimizer], [scheduler]
 

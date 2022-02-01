@@ -166,7 +166,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", default=5, type=int,
                         required=False, help="训练循环")
     parser.add_argument(
-        "--batch_size", default=8, type=int, required=False, help="训练batch size"
+        "--batch_size", default=32, type=int, required=False, help="训练batch size"
     )
     parser.add_argument("--lr", default=1.5e-4, type=float,
                         required=False, help="学习率")
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         "--warmup_steps", default=2000, type=int, required=False, help="warm up步数"
     )
     parser.add_argument(
-        "--max_length", default=1024, type=int, required=False, help="单条文本最长长度"
+        "--max_length", default=5, type=int, required=False, help="单条文本最长长度"
     )
     parser.add_argument(
         "--eval_interval", default=100, type=int, required=False, help="eval 步数"
@@ -209,7 +209,6 @@ if __name__ == "__main__":
     checkpoint_callback = ModelCheckpoint(
         dirpath=output_path,
         verbose=True,
-        period=1,
         save_top_k=1,
         monitor="val_loss",
         mode="min",
@@ -219,8 +218,7 @@ if __name__ == "__main__":
         default_root_dir=output_path,
         gradient_clip_val=1,
         max_epochs=epochs,
-        gpus=args.device,
-        distributed_backend="dp",
+        gpus=2,
         val_check_interval=eval_interval,
         callbacks=[learning_rate_callback, checkpoint_callback],
         precision=32,

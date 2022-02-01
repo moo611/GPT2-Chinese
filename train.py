@@ -105,9 +105,9 @@ class Net(pl.LightningModule):
         # scheduler = get_linear_schedule_with_warmup(
         #     optimizer, self.warm_up_steps, total_steps
         # )
-        scheduler = {"scheduler": None,
-                     "interval": "step", "frequency": 1}
-        return [optimizer], [scheduler]
+        # scheduler = {"scheduler": None,
+        #              "interval": "step", "frequency": 1}
+        return [optimizer], []
 
     def training_step(self, batch, batch_nb):
         loss = self.forward(batch["input_ids"], batch["attention_mask"])

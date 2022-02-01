@@ -11,7 +11,7 @@ import argparse
 
 
 class DS(Dataset):
-    def __init__(self, lines, vocab_path="vocab/vocab.txt", max_length=1024):
+    def __init__(self, lines, vocab_path="vocab/vocab.txt", max_length=4):
         self.data = lines
         self.tok = BertTokenizer(vocab_file=vocab_path)
         self.max_length = max_length
@@ -41,7 +41,7 @@ class Net(pl.LightningModule):
         data_path="data/train.json",
         valid_examples=100,
         vocab_path="vocab/vocab.txt",
-        max_length=1024,
+        max_length=4,
         warm_up_steps=0,
         lr=1e-4,
     ):
@@ -54,7 +54,14 @@ class Net(pl.LightningModule):
         self.model_name = "bert_pretrained_model"
         self.config = GPT2Config.from_json_file(config_path)
         self.model = GPT2LMHeadModel(config=self.config)
-        self.data = [json.loads(line.strip()) for line in open(data_path)]
+        # self.data = [json.loads(line.strip()) for line in open(data_path)]
+        self.data = []
+
+        with open(data_path, 'r', encoding='utf-8') as f:
+            for line in f.readlines():
+                line = line.split(",")
+                self.data.append(line[0])
+
         self.dataset_train = DS(
             self.data[:-valid_examples], vocab_path=vocab_path, max_length=max_length
         )
@@ -96,7 +103,8 @@ class Net(pl.LightningModule):
         scheduler = get_linear_schedule_with_warmup(
             optimizer, self.warm_up_steps, self.t_total
         )
-        scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
+        scheduler = {"scheduler": scheduler,
+                     "interval": "step", "frequency": 1}
         return [optimizer], [scheduler]
 
     def training_step(self, batch, batch_nb):
@@ -155,11 +163,13 @@ if __name__ == "__main__":
         required=False,
         help="原始训练语料",
     )
-    parser.add_argument("--epochs", default=5, type=int, required=False, help="训练循环")
+    parser.add_argument("--epochs", default=5, type=int,
+                        required=False, help="训练循环")
     parser.add_argument(
         "--batch_size", default=8, type=int, required=False, help="训练batch size"
     )
-    parser.add_argument("--lr", default=1.5e-4, type=float, required=False, help="学习率")
+    parser.add_argument("--lr", default=1.5e-4, type=float,
+                        required=False, help="学习率")
     parser.add_argument(
         "--warmup_steps", default=2000, type=int, required=False, help="warm up步数"
     )

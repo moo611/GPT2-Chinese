@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--device", default="0", type=str, required=False, help="设置使用哪些显卡，用逗号分割"
+        "--device", default=0, type=int, required=False, help="显卡数"
     )
     parser.add_argument(
         "--config_path",
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         default_root_dir=output_path,
         gradient_clip_val=1,
         max_epochs=epochs,
-        gpus=2,
+        gpus=args.device,
         val_check_interval=eval_interval,
         callbacks=[learning_rate_callback, checkpoint_callback],
         precision=32,

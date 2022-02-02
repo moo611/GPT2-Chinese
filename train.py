@@ -59,8 +59,10 @@ class Net(pl.LightningModule):
 
         with open(data_path, 'r', encoding='utf-8') as f:
             for line in f.readlines():
+                line = line.replace("\n", "")
                 line = line.split(",")
-                if line[1]=="女":
+                print("line", line)
+                if line[1] == "女":
                     self.data.append(line[0])
 
         self.dataset_train = DS(

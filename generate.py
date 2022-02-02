@@ -54,17 +54,20 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float("Inf")
     top_k = min(top_k, logits.size(-1))  # Safety check
     if top_k > 0:
         # Remove all tokens with a probability less than the last token of the top-k
-        indices_to_remove = logits < torch.topk(logits, top_k)[0][..., -1, None]
+        indices_to_remove = logits < torch.topk(logits, top_k)[
+            0][..., -1, None]
         logits[indices_to_remove] = filter_value
 
     if top_p > 0.0:
         sorted_logits, sorted_indices = torch.sort(logits, descending=True)
-        cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+        cumulative_probs = torch.cumsum(
+            F.softmax(sorted_logits, dim=-1), dim=-1)
 
         # Remove tokens with cumulative probability above the threshold
         sorted_indices_to_remove = cumulative_probs > top_p
         # Shift the indices to the right to keep also the first token above the threshold
-        sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[..., :-1].clone()
+        sorted_indices_to_remove[...,
+                                 1:] = sorted_indices_to_remove[..., :-1].clone()
         sorted_indices_to_remove[..., 0] = 0
 
         indices_to_remove = sorted_indices[sorted_indices_to_remove]
@@ -89,7 +92,7 @@ def sample_sequence(
     generated = context
     with torch.no_grad():
         for _ in trange(length):
-            inputs = {"input_ids": generated[0][-(n_ctx - 1) :].unsqueeze(0)}
+            inputs = {"input_ids": generated[0][-(n_ctx - 1):].unsqueeze(0)}
             outputs = model(
                 **inputs
             )  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
@@ -97,7 +100,8 @@ def sample_sequence(
             for id in set(generated):
                 next_token_logits[id] /= repitition_penalty
             next_token_logits = next_token_logits / temperature
-            next_token_logits[tokenizer.convert_tokens_to_ids("[UNK]")] = -float("Inf")
+            next_token_logits[tokenizer.convert_tokens_to_ids(
+                "[UNK]")] = -float("Inf")
             filtered_logits = top_k_top_p_filtering(
                 next_token_logits, top_k=top_k, top_p=top_p
             )
@@ -124,7 +128,8 @@ def fast_sample_sequence(
             output = model(prev, past=past)
             output, past = output[:2]
             output = output[-1].squeeze(0) / temperature
-            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=top_p)
+            filtered_logits = top_k_top_p_filtering(
+                output, top_k=top_k, top_p=top_p)
             next_token = torch.multinomial(
                 torch.softmax(filtered_logits, dim=-1), num_samples=1
             )
@@ -135,9 +140,12 @@ def fast_sample_sequence(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--device", default="0", type=str, required=False, help="生成设备")
-    parser.add_argument("--length", default=512, type=int, required=False, help="生成长度")
-    parser.add_argument("--n_ctx", default=1024, type=int, required=False, help="生成时考虑的上下文长度")
+    parser.add_argument("--device", default="0", type=str,
+                        required=False, help="生成设备")
+    parser.add_argument("--length", default=512, type=int,
+                        required=False, help="生成长度")
+    parser.add_argument("--n_ctx", default=1024, type=int,
+                        required=False, help="生成时考虑的上下文长度")
     parser.add_argument(
         "--batch_size", default=1, type=int, required=False, help="生成的batch size"
     )
@@ -147,8 +155,10 @@ def main():
     parser.add_argument(
         "--temperature", default=1, type=float, required=False, help="生成温度"
     )
-    parser.add_argument("--topk", default=8, type=int, required=False, help="最高几选一")
-    parser.add_argument("--topp", default=0, type=float, required=False, help="最高积累概率")
+    parser.add_argument("--topk", default=8, type=int,
+                        required=False, help="最高几选一")
+    parser.add_argument("--topp", default=0, type=float,
+                        required=False, help="最高积累概率")
     parser.add_argument(
         "--model_config",
         default="config/model_config.json",
@@ -165,7 +175,7 @@ def main():
     )
     parser.add_argument(
         "--model_path",
-        default="model/epoch=0-step=99.ckpt",
+        default="model/epoch=1-step=5426.ckpt",
         type=str,
         required=False,
         help="模型路径",
@@ -173,14 +183,17 @@ def main():
     parser.add_argument(
         "--prefix", default="我", type=str, required=False, help="生成文章的开头"
     )
-    parser.add_argument("--no_wordpiece", action="store_true", help="不做word piece切词")
+    parser.add_argument(
+        "--no_wordpiece", action="store_true", help="不做word piece切词")
     parser.add_argument("--segment", action="store_true", help="中文以词为单位")
-    parser.add_argument("--fast_pattern", action="store_true", help="采用更加快的方式生成文本")
+    parser.add_argument(
+        "--fast_pattern", action="store_true", help="采用更加快的方式生成文本")
     parser.add_argument("--save_samples", action="store_true", help="保存产生的样本")
     parser.add_argument(
         "--save_samples_path", default=".", type=str, required=False, help="保存样本的路径"
     )
-    parser.add_argument("--repetition_penalty", default=1.0, type=float, required=False)
+    parser.add_argument("--repetition_penalty", default=1.0,
+                        type=float, required=False)
 
     args = parser.parse_args()
     print("args:\n" + args.__repr__())

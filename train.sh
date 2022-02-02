@@ -1,1 +1,1 @@
-python3 train.py --data_path data/train.json
+python3 train.py --data_path data/nicknames.csv --lr 0.001

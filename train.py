@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 import torch
 import json
 import argparse
-
+import csv
 # 11846807
 
 
@@ -43,6 +43,7 @@ class Net(pl.LightningModule):
         max_length=4,
         warm_up_steps=0,
         lr=1e-4,
+        classifier="男生网名",
     ):
         super(Net, self).__init__()
         self.batch_size = batch_size
@@ -55,13 +56,18 @@ class Net(pl.LightningModule):
         self.model = GPT2LMHeadModel(config=self.config)
         # self.data = [json.loads(line.strip()) for line in open(data_path)]
         self.data = []
+        self.classifier = classifier
+        # with open(data_path, 'r', encoding='utf-8') as f:
+        #     for line in f.readlines():
+        #         line = line.replace("\n", "")
+        #         line = line.split(",")
+        #         if line[1] == "女":
+        #             self.data.append(line[0])
 
-        with open(data_path, 'r', encoding='utf-8') as f:
-            for line in f.readlines():
-                line = line.replace("\n", "")
-                line = line.split(",")
-                if line[1] == "女":
-                    self.data.append(line[0])
+        csv_reader = csv.reader(open(data_path))
+        for line in csv_reader:
+            if line[1] == self.classifier:
+                self.data.append(line[0])
 
         self.dataset_train = DS(
             self.data[:-val_examples], vocab_path=vocab_path, max_length=max_length
@@ -166,10 +172,10 @@ if __name__ == "__main__":
         required=False,
         help="原始训练语料",
     )
-    parser.add_argument("--epochs", default=5, type=int,
+    parser.add_argument("--epochs", default=12, type=int,
                         required=False, help="训练循环")
     parser.add_argument(
-        "--batch_size", default=128, type=int, required=False, help="训练batch size"
+        "--batch_size", default=64, type=int, required=False, help="训练batch size"
     )
     parser.add_argument("--lr", default=1.5e-4, type=float,
                         required=False, help="学习率")
@@ -191,6 +197,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--output_dir", default="model/", type=str, required=False, help="模型输出路径"
+    )
+    parser.add_argument(
+        "--classifier", default="男生网名", type=str, required=False, help="网名类型"
     )
     args = parser.parse_args()
 

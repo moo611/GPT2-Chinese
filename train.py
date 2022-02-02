@@ -61,7 +61,6 @@ class Net(pl.LightningModule):
             for line in f.readlines():
                 line = line.replace("\n", "")
                 line = line.split(",")
-                print("line", line)
                 if line[1] == "女":
                     self.data.append(line[0])
 
@@ -182,10 +181,10 @@ if __name__ == "__main__":
         "--max_length", default=5, type=int, required=False, help="单条文本最长长度"
     )
     parser.add_argument(
-        "--eval_interval", default=100, type=int, required=False, help="eval 步数"
+        "--eval_interval", default=500, type=int, required=False, help="eval 步数"
     )
     parser.add_argument(
-        "--val_examples", default=100, type=int, required=False, help="选择多少验证集样本"
+        "--val_examples", default=500, type=int, required=False, help="选择多少验证集样本"
     )
     parser.add_argument(
         "--t_total", default=100000, type=int, required=False, help="计划训练多少步"

@@ -36,10 +36,9 @@ class Net(pl.LightningModule):
         self,
         batch_size,
         epochs,
-        t_total=100000,
         config_path="config/model_config.json",
         data_path="data/train.json",
-        valid_examples=100,
+        val_examples=100,
         vocab_path="vocab/vocab.txt",
         max_length=4,
         warm_up_steps=0,
@@ -48,7 +47,7 @@ class Net(pl.LightningModule):
         super(Net, self).__init__()
         self.batch_size = batch_size
         self.epochs = epochs
-        self.t_total = t_total
+
         self.warm_up_steps = warm_up_steps
         self.lr = lr
         self.model_name = "bert_pretrained_model"
@@ -65,10 +64,10 @@ class Net(pl.LightningModule):
                     self.data.append(line[0])
 
         self.dataset_train = DS(
-            self.data[:-valid_examples], vocab_path=vocab_path, max_length=max_length
+            self.data[:-val_examples], vocab_path=vocab_path, max_length=max_length
         )
         self.dataset_valid = DS(
-            self.data[-valid_examples:], vocab_path=vocab_path, max_length=max_length
+            self.data[-val_examples:], vocab_path=vocab_path, max_length=max_length
         )
 
     def forward(self, input_ids, attention_mask):
@@ -102,14 +101,14 @@ class Net(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=self.lr, weight_decay=0.001)
-        # total_steps = len(self.data)/self.batch_size*self.epochs
-        # print('total steps:', total_steps)
-        # scheduler = get_linear_schedule_with_warmup(
-        #     optimizer, self.warm_up_steps, total_steps
-        # )
-        # scheduler = {"scheduler": None,
-        #              "interval": "step", "frequency": 1}
-        return [optimizer], []
+        total_steps = len(self.val_dataloader())*self.epochs
+        print('total steps:', total_steps)
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer, self.warm_up_steps, total_steps
+        )
+        scheduler = {"scheduler": scheduler,
+                     "interval": "step", "frequency": 1}
+        return [optimizer], [scheduler]
 
     def training_step(self, batch, batch_nb):
         loss = self.forward(batch["input_ids"], batch["attention_mask"])
@@ -186,9 +185,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--val_examples", default=500, type=int, required=False, help="选择多少验证集样本"
     )
-    parser.add_argument(
-        "--t_total", default=100000, type=int, required=False, help="计划训练多少步"
-    )
+
     parser.add_argument(
         "--log_step", default=1, type=int, required=False, help="多少步汇报一次loss"
     )
@@ -208,7 +205,6 @@ if __name__ == "__main__":
     warmup_steps = args.warmup_steps
     data_path = args.data_path
     config_path = args.config_path
-    t_total = args.t_total
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=output_path,
@@ -230,10 +226,9 @@ if __name__ == "__main__":
     net = Net(
         batch_size,
         epochs,
-        t_total=t_total,
         config_path=config_path,
         data_path=data_path,
-        valid_examples=val_examples,
+        val_examples=val_examples,
         vocab_path=vocab_path,
         max_length=max_length,
         warm_up_steps=warmup_steps,

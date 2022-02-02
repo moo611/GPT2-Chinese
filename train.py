@@ -214,7 +214,7 @@ if __name__ == "__main__":
     warmup_steps = args.warmup_steps
     data_path = args.data_path
     config_path = args.config_path
-
+    classifier =args.classifier
     checkpoint_callback = ModelCheckpoint(
         dirpath=output_path,
         verbose=False,
@@ -242,6 +242,7 @@ if __name__ == "__main__":
         max_length=max_length,
         warm_up_steps=warmup_steps,
         lr=lr,
+        classifier=classifier
     )
     # d = torch.load('output_old/best.ckpt', map_location=torch.device("cpu"))["state_dict"]
     # d.pop('model.classifier.bias')

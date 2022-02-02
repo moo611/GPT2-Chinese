@@ -11,7 +11,7 @@ vocab/.DS_Store
 .idea
 .vscode
 *.pyc
-# model
+model
 *.ckpt
 *.log
 log

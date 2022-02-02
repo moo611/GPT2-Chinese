@@ -3,4 +3,5 @@ python3 train.py \
 --lr 0.001 \
 --device 1 \
 --classifier 女生网名 \
---epochs 10
+--epochs 10 \
+--max_length 12

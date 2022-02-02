@@ -67,7 +67,7 @@ class Net(pl.LightningModule):
         csv_reader = csv.reader(open(data_path))
         for line in csv_reader:
 
-            if line[1] == self.classifier and len(line[0] <= 6):
+            if line[1] == self.classifier and len(line[0]) <= 6:
                 self.data.append(line[0])
 
         self.dataset_train = DS(

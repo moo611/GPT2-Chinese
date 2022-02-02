@@ -223,7 +223,7 @@ def main():
     model.eval()
 
     for i in range(nsamples):
-        raw_text = args.prefix
+        raw_text = "[CLS]"+args.prefix
         encoded = tokenizer.encode_plus(raw_text)["input_ids"][:-1]
         out = sample_sequence(
             model,

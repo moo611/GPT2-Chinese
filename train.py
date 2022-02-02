@@ -66,7 +66,8 @@ class Net(pl.LightningModule):
         print("classifier:", self.classifier)
         csv_reader = csv.reader(open(data_path))
         for line in csv_reader:
-            if line[1] == self.classifier:
+
+            if line[1] == self.classifier and len(line[0] <= 6):
                 self.data.append(line[0])
 
         self.dataset_train = DS(
@@ -214,7 +215,7 @@ if __name__ == "__main__":
     warmup_steps = args.warmup_steps
     data_path = args.data_path
     config_path = args.config_path
-    classifier =args.classifier
+    classifier = args.classifier
     checkpoint_callback = ModelCheckpoint(
         dirpath=output_path,
         verbose=False,

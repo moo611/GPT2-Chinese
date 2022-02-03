@@ -4,4 +4,5 @@ python3 train.py \
 --device 1 \
 --classifier 男生网名 \
 --epochs 10 \
---max_length 8
+--max_length 8 \
+--warmup_steps 200 \

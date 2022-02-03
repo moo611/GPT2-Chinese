@@ -28,6 +28,7 @@ class DS(Dataset):
             padding="max_length",
             return_tensors="pt",
         )
+        
         return line
 
 
@@ -69,7 +70,7 @@ class Net(pl.LightningModule):
 
             if line[1] == self.classifier and len(line[0]) <= 6:
                 self.data.append(line[0])
-
+        print("total data:", len(self.data))
         self.dataset_train = DS(
             self.data[:-val_examples], vocab_path=vocab_path, max_length=max_length
         )
@@ -154,7 +155,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--config_path",
-        default="config/model_config.json",
+        default="config/model_config_small.json",
         type=str,
         required=False,
         help="选择模型参数",

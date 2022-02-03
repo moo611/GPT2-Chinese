@@ -6,5 +6,6 @@ python3 train.py \
 --epochs 20 \
 --max_length 10 \
 --warmup_steps 200 \
---eval_interval 100 \
---val_examples 100 \
+--eval_interval 500 \
+--val_examples 500 \
+--batch_size 128 \

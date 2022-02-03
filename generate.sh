@@ -2,7 +2,7 @@ python generate.py \
   --device 0 \
   --length 10 \
   --n_ctx 10 \
-  --model_path model/nickname_man3.ckpt \
+  --model_path model/nickname_woman.ckpt \
   --prefix "" \
   --topp 0 \
   --temperature 1.0 \

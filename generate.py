@@ -210,17 +210,16 @@ def main():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # tokenizer = BertTokenizer(vocab_file=args.tokenizer_path)
-    # model_config = GPT2Config.from_json_file(args.model_config)
-    # model = GPT2LMHeadModel(config=model_config)
-    # state_dict = torch.load(args.model_path, map_location="cpu")
-    # if 'state_dict' in state_dict:
-    #     state_dict = {
-    #         key[6:]: value for key, value in state_dict["state_dict"].items()
-    #     }
-    # model.load_state_dict(state_dict)
-    tokenizer = BertTokenizer.from_pretrained("model/nickname_man3.ckpt")
-   
+    tokenizer = BertTokenizer.from_pretrained("gpt2model")
+    #model_config = GPT2Config.from_json_file(args.model_config)
+    model_config = GPT2Config.from_pretrained("gpt2model")
+    model = GPT2LMHeadModel(config=model_config)
+    state_dict = torch.load(args.model_path, map_location="cpu")
+    if 'state_dict' in state_dict:
+        state_dict = {
+            key[6:]: value for key, value in state_dict["state_dict"].items()
+        }
+    model.load_state_dict(state_dict)
     
     model.to(device)
     model.eval()

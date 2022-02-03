@@ -15,3 +15,4 @@ model
 *.ckpt
 *.log
 log
+gpt2model

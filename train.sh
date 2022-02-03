@@ -3,6 +3,8 @@ python3 train.py \
 --lr 0.001 \
 --device 1 \
 --classifier 男生网名 \
---epochs 10 \
---max_length 8 \
+--epochs 20 \
+--max_length 10 \
 --warmup_steps 200 \
+--eval_interval 100 \
+--val_examples 100 \

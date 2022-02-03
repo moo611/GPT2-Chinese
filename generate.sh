@@ -1,8 +1,9 @@
 python generate.py \
   --device 0 \
-  --length 6 \
-  --n_ctx 8 \
-  --model_path model/nickname_man.ckpt \
+  --length 10 \
+  --n_ctx 10 \
+  --model_path model/nickname_man3.ckpt \
   --prefix "" \
-  --topp 1 \
-  --temperature 1.0
+  --topp 0 \
+  --temperature 1.0 \
+  --nsamples 50 \

@@ -13,7 +13,8 @@ import csv
 class DS(Dataset):
     def __init__(self, lines, vocab_path="vocab/vocab.txt", max_length=4):
         self.data = lines
-        self.tok = BertTokenizer(vocab_file=vocab_path)
+        # self.tok = BertTokenizer(vocab_file=vocab_path)
+        self.tok = BertTokenizer.from_pretrained("gpt2model")
         self.max_length = max_length
 
     def __len__(self):
@@ -53,8 +54,9 @@ class Net(pl.LightningModule):
         self.warm_up_steps = warm_up_steps
         self.lr = lr
         self.model_name = "bert_pretrained_model"
-        self.config = GPT2Config.from_json_file(config_path)
-        self.model = GPT2LMHeadModel(config=self.config)
+        #self.config = GPT2Config.from_json_file(config_path)
+        self.model = GPT2LMHeadModel.from_pretrained("gpt2model")
+       
         # self.data = [json.loads(line.strip()) for line in open(data_path)]
         self.data = []
         self.classifier = classifier
@@ -68,7 +70,7 @@ class Net(pl.LightningModule):
         csv_reader = csv.reader(open(data_path))
         for line in csv_reader:
 
-            if line[1] == self.classifier and len(line[0]) <= 6:
+            if line[1] == self.classifier:
                 self.data.append(line[0])
         print("total data:", len(self.data))
         self.dataset_train = DS(
@@ -109,14 +111,8 @@ class Net(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=self.lr, weight_decay=0.001)
-        total_steps = len(self.val_dataloader())*self.epochs
-        print('total steps:', total_steps)
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer, self.warm_up_steps, total_steps
-        )
-        scheduler = {"scheduler": scheduler,
-                     "interval": "step", "frequency": 1}
-        return [optimizer], [scheduler]
+        
+        return [optimizer]
 
     def training_step(self, batch, batch_nb):
         loss = self.forward(batch["input_ids"], batch["attention_mask"])

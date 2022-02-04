@@ -3,7 +3,7 @@ python generate.py \
   --length 10 \
   --n_ctx 10 \
   --model_path model/name_company.ckpt \
-  --prefix "" \
+  --prefix "美" \
   --topp 0 \
   --temperature 1.0 \
   --nsamples 20 \

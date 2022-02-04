@@ -2,8 +2,8 @@ python generate.py \
   --device 0 \
   --length 10 \
   --n_ctx 10 \
-  --model_path model/nickname_woman.ckpt \
+  --model_path model/name_company.ckpt \
   --prefix "" \
   --topp 0 \
   --temperature 1.0 \
-  --nsamples 50 \
+  --nsamples 20 \

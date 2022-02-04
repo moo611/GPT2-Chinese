@@ -1,9 +1,8 @@
-python3 train.py \
---data_path data/nicknames.csv \
+python3 train_company.py \
+--data_path data/Company_Names.txt \
 --lr 0.001 \
 --device 1 \
---classifier 搞笑网名 \
---epochs 20 \
+--epochs 12 \
 --max_length 10 \
 --warmup_steps 200 \
 --eval_interval 500 \

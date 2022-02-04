@@ -210,9 +210,11 @@ def main():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    tokenizer = BertTokenizer.from_pretrained("gpt2model")
+    tokenizer = BertTokenizer.from_pretrained(
+        "uer/gpt2-chinese-cluecorpussmall")
     #model_config = GPT2Config.from_json_file(args.model_config)
-    model_config = GPT2Config.from_pretrained("gpt2model")
+    model_config = GPT2Config.from_pretrained(
+        "uer/gpt2-chinese-cluecorpussmall")
     model = GPT2LMHeadModel(config=model_config)
     state_dict = torch.load(args.model_path, map_location="cpu")
     if 'state_dict' in state_dict:
@@ -220,7 +222,7 @@ def main():
             key[6:]: value for key, value in state_dict["state_dict"].items()
         }
     model.load_state_dict(state_dict)
-    
+
     model.to(device)
     model.eval()
 

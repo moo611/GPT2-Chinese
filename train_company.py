@@ -54,27 +54,21 @@ class Net(pl.LightningModule):
 
         self.warm_up_steps = warm_up_steps
         self.lr = lr
-        self.model_name = "bert_pretrained_model"
+        # self.model_name = "bert_pretrained_model"
         #self.config = GPT2Config.from_json_file(config_path)
         self.model = GPT2LMHeadModel.from_pretrained(
             "uer/gpt2-chinese-cluecorpussmall")
 
         # self.data = [json.loads(line.strip()) for line in open(data_path)]
         self.data = []
-        self.classifier = classifier
-        # with open(data_path, 'r', encoding='utf-8') as f:
-        #     for line in f.readlines():
-        #         line = line.replace("\n", "")
-        #         line = line.split(",")
-        #         if line[1] == "女":
-        #             self.data.append(line[0])
-        print("classifier:", self.classifier)
-        csv_reader = csv.reader(open(data_path))
-        for line in csv_reader:
 
-            if line[1] == self.classifier:
-                self.data.append(line[0])
+        with open(data_path, 'r', encoding='utf-8-sig') as f:
+            for line in f.readlines():
+                line = line.replace("\n", "")
+                self.data.append(line)
+
         print("total data:", len(self.data))
+        print("examples:", self.data[:5])
         self.dataset_train = DS(
             self.data[:-val_examples], vocab_path=vocab_path, max_length=max_length
         )
@@ -113,6 +107,7 @@ class Net(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=self.lr, weight_decay=0.001)
+
         return [optimizer]
 
     def training_step(self, batch, batch_nb):
